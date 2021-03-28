@@ -430,7 +430,7 @@ public class enemy extends entity{
     }
     if(behavior=="boss2"){//second and final bossfight
       if(attackCooldown==0){
-        float i=random(0,1));
+        float i=random(0,1);
         if(0<=i&&i<=1){
           attackCooldown=720;
         }
