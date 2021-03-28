@@ -54,6 +54,7 @@ public class player extends entity{
     money=0;
   }
   void update(){
+    if(attackCooldown==0){
     if(abs(mouseX-xpos)<abs(mouseY-ypos)){
       if(mouseY-ypos>0){
         facingy=1;
@@ -73,6 +74,48 @@ public class player extends entity{
         facingx=-1;
         facingy=0;
       }
+    }
+    }
+    else
+    {
+      imageMode(CORNER);
+      if(facingy==1){
+          
+          if(reach==100){
+            image(shortsword_back,xpos,ypos,20,reach);
+            }
+            else{
+              image(longsword_back,xpos,ypos,20,reach);
+            }
+          
+        }
+        if(facingy==-1){
+          
+          if(reach==100){
+            image(img_shortsword,xpos,ypos,20,-reach);
+            }
+            else{
+              image(img_longsword,xpos,ypos,20,-reach);
+            }
+        }
+        if(facingx==1){
+          
+          if(reach==100){
+            image(img_shortsword_rotate,xpos,ypos,reach,20);
+            }
+            else{
+              image(img_longsword_rotate,xpos,ypos,reach,20);
+            }
+        }
+        if(facingx==-1){
+          
+          if(reach==100){
+            image(shortsword_left,xpos,ypos,-reach,20);
+            }
+            else{
+              image(longsword_left,xpos,ypos,-reach,20);
+            }
+        }
     }
     strokeWeight(3);
     fill(255);
@@ -94,7 +137,7 @@ public class player extends entity{
       fill(255);
       stroke(0);
     }
-    image(img,xpos,ypos,size,size*1.5);
+    image(img_player,xpos,ypos,size,size);
     rectMode(CORNERS);
     if(health<=0){
       background(0);
@@ -110,34 +153,63 @@ public class player extends entity{
 }
   void attack(){
     if(attackCooldown==0&&!paused){
-    strokeWeight(3);
-    stroke(255,0,0);
-    line(xpos+facingx*size/2,ypos+facingy*size/2,xpos+facingx*(size/2+reach),ypos+facingy*(size/2+reach));
+    ///strokeWeight(3);
+    ///stroke(255,0,0);
+    ///line(xpos+facingx*size/2,ypos+facingy*size/2,xpos+facingx*(size/2+reach),ypos+facingy*(size/2+reach));
     ///rectMode(CORNER);
     ///rect(xpos+facingx*size/2-5*(abs(facingx)-1),ypos+facingy*size/2-5*(abs(facingy)-1),xpos+facingx*(size/2+reach)+5*(abs(facingx)-1),ypos+facingy*(size/2+reach)+5*(abs(facingx)-1));
     attackCooldown+=attackSpeed;
     noStroke();
+    imageMode(CORNER);
+    
       for(enemy example:enemies[level]){
         if(example.inplay){
         if(facingy==1){
           if( abs(example.xpos-xpos)<example.size/2&&example.ypos>ypos+size/2&&ypos+facingy*(size/2+reach)>example.ypos-example.size/2){
             example.hit(damage);
           }
+          if(reach==100){
+            image(shortsword_back,xpos,ypos,20,reach);
+            }
+            else{
+              image(longsword_back,xpos,ypos,20,reach);
+            }
+          
         }
         if(facingy==-1){
           if( abs(example.xpos-xpos)<example.size/2&&example.ypos<ypos-size/2&&ypos+facingy*(size/2+reach)<example.ypos+example.size/2){
             example.hit(damage);
+            
+
           }
+          if(reach==100){
+            image(img_shortsword,xpos,ypos,20,-reach);
+            }
+            else{
+              image(img_longsword,xpos,ypos,20,-reach);
+            }
         }
         if(facingx==1){
           if( abs(example.ypos-ypos)<example.size/2&&example.xpos>xpos+size/2&&xpos+facingx*(size/2+reach)>example.xpos-example.size/2){
             example.hit(damage);
           }
+          if(reach==100){
+            image(img_shortsword_rotate,xpos,ypos,reach,20);
+            }
+            else{
+              image(img_longsword_rotate,xpos,ypos,reach,20);
+            }
         }
         if(facingx==-1){
           if( abs(example.ypos-ypos)<example.size/2&&example.xpos<xpos-size/2&&xpos+facingx*(size/2+reach)<example.xpos+example.size/2){
             example.hit(damage);
           }
+          if(reach==100){
+            image(shortsword_left,xpos,ypos,-reach,20);
+            }
+            else{
+              image(longsword_left,xpos,ypos,-reach,20);
+            }
         }
       }
     }
@@ -322,7 +394,8 @@ public class button {
 public class enemy extends entity{
   String behavior, attackPattern;
   boolean alive,inplay;
-  float direction,direction2;
+  float direction;
+  ///float direction2;
   enemy(int d, int h, float xpo, float ypo, float mov, float siz, String b, boolean inpla,int m){
     damage=d;
     xmov=0;
@@ -344,7 +417,7 @@ public class enemy extends entity{
     attackCooldown=0;
     attackPattern="";
     direction=0;//for sword enemies and boss enemies
-    direction2=0;//dont want this to be x and y since just direction can be used
+   /// direction2=0;//dont want this to be x and y since just direction can be used
   }
   void update(){
     if(alive&&inplay){
@@ -393,23 +466,46 @@ public class enemy extends entity{
     }
     if(behavior=="sword"){
       strokeWeight(10);
-      rectMode(CORNERS);
-      if(attackCooldown>0){//this use of negative and positive attackCooldown is useful but I don't think I will use it extensively
+      
+      imageMode(CORNER);
+      if(attackCooldown>0){//this use of negative and positive attackCooldown is useful
         attackCooldown-=1;
-        rect(xpos,ypos-5,xpos-100*direction,ypos+5);
+        
+            if(direction>0){
+            image(shortsword_left,xpos,ypos,-100,20);
+            
+            }
+            else{
+              image(img_shortsword_rotate,xpos,ypos,100,20);
+            }
       }
       else if(attackCooldown<0){
         attackCooldown+=1;
-        rect(xpos-5,ypos,xpos+5,ypos-100*direction);
+       
+        if(direction<0){
+            image(shortsword_back,xpos,ypos,20,100);
+            
+            }
+            else{
+              image(img_shortsword,xpos,ypos,20,-100);
+            }
       }
-      rectMode(CORNERS);
+      imageMode(CORNER);
         if(abs(xpos-player1.xpos)>abs(ypos-player1.ypos)){
           xmov= -(xpos-player1.xpos)*(abs(xpos-player1.xpos)-80)*(abs(xpos-player1.xpos)-80)/(((abs(xpos-player1.xpos)-80)*(abs(xpos-player1.xpos)-80)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs(xpos-player1.xpos));
           ymov=-(ypos-player1.ypos)*(ypos-player1.ypos)*(ypos-player1.ypos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs(ypos-player1.ypos));
           if(abs(xpos-player1.xpos)<100&&(ypos-player1.ypos)<player1.size&&attackCooldown==0){
             
-            rect(xpos,ypos-5,xpos-100*(xpos-player1.xpos)/abs(xpos-player1.xpos),ypos+5);
+            
             direction=(xpos-player1.xpos)/abs(xpos-player1.xpos);
+            
+            if(direction>0){
+            image(shortsword_left,xpos,ypos,-100,20);
+            
+            }
+            else{
+              image(img_shortsword_rotate,xpos,ypos,100,20);
+            }
             player1.hit(damage);
             attackCooldown+=frameRate*0.5;
           }
@@ -419,8 +515,15 @@ public class enemy extends entity{
             xmov=-(xpos-player1.xpos)*(xpos-player1.xpos)*(xpos-player1.xpos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs(xpos-player1.xpos));
             if(abs(ypos-player1.ypos)<100&&(xpos-player1.xpos)<player1.size&&attackCooldown==0){
               strokeWeight(5);
-            rect(xpos-5,ypos,xpos+5,ypos-100*(ypos-player1.ypos)/abs(ypos-player1.ypos));
+            
             direction=(ypos-player1.ypos)/abs(ypos-player1.ypos);
+            if(direction<0){
+            image(shortsword_back,xpos,ypos,20,100);
+            
+            }
+            else{
+              image(img_shortsword,xpos,ypos,20,-100);
+            }
             player1.hit(damage);
             attackCooldown-=frameRate*0.5;
           }
@@ -430,7 +533,7 @@ public class enemy extends entity{
     }
     if(behavior=="boss2"){//second and final bossfight
       if(attackCooldown==0){
-        float i=random(0,1);
+        float i=random(0,2);
         if(0<=i&&i<=1){
           attackCooldown=720;
         }
@@ -438,32 +541,40 @@ public class enemy extends entity{
           attackCooldown=-300;
         }
       }
-      if(attackCooldown<=720&&attackCooldown>=540){
+      else{
+        if(attackCooldown>0){
+          attackCooldown-=1;
+        }
+        else if(attackCooldown<0){
+          attackCooldown+=1;
+        }
+      }
+      if(attackCooldown<=720&&attackCooldown>=300){
         xmov=0;
         ymov=0;
         strokeWeight(1);
         stroke(255,0,0);
         line(player1.xpos,player1.ypos,xpos,ypos);
-        direction=-(xpos-player1.xpos)*(xpos-player1.xpos)*(xpos-player1.xpos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs((xpos-player1.xpos)));
-        direction2=-(ypos-player1.ypos)*(ypos-player1.ypos)*(ypos-player1.ypos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs(ypos-player1.ypos));
+        ///direction=-(xpos-player1.xpos)*(xpos-player1.xpos)*(xpos-player1.xpos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs((xpos-player1.xpos)));
+        ///direction2=-(ypos-player1.ypos)*(ypos-player1.ypos)*(ypos-player1.ypos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs(ypos-player1.ypos));
       }
-      if(attackCooldown<120&&attackCooldown>0){
-        xmov=3*direction;
-        ymov=3*direction2;
+      if(attackCooldown<300&&attackCooldown>0){
+        xmov=3*-(xpos-player1.xpos)*(xpos-player1.xpos)*(xpos-player1.xpos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs((xpos-player1.xpos)));
+        ymov=3*-(ypos-player1.ypos)*(ypos-player1.ypos)*(ypos-player1.ypos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs(ypos-player1.ypos));
        
       }
-      if(attackCooldown>=-240&&attackCooldown<0){
+      if(attackCooldown>=-300&&attackCooldown<0){
         ellipseMode(CENTER);
         if(attackCooldown<=-60){
-          fill(255,0,0,128);
+          fill(255,0,0,64);
           ellipse(xpos,ypos,250,250);
            xmov=-(xpos-player1.xpos)*(xpos-player1.xpos)*(xpos-player1.xpos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs((xpos-player1.xpos)));
            ymov=-(ypos-player1.ypos)*(ypos-player1.ypos)*(ypos-player1.ypos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs((ypos-player1.ypos)));
         }
         if(attackCooldown>=-60){
-          fill(255,0,0,64);
-          ellipse(xpos,ypos,-250*attackCooldown/60,-250*attackCooldown/60);
-          if((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos)<(-250*attackCooldown/60)*-250*attackCooldown/60){
+          fill(255,0,0,192);
+          ellipse(xpos,ypos,250*(60+attackCooldown)/60,250*(60+attackCooldown)/60);
+          if((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos)<(250*(60+attackCooldown)/60)*-250*(60+attackCooldown)/60){
             player1.hit(damage);
             xmov=0;
             ymov=0;
@@ -549,9 +660,10 @@ class powerup{
     price=p;
   }
   void update(){
-    if(inplay&&!used){
+    fill(0,0,255,128);
     rectMode(CENTER);
-    fill(0,0,255);
+
+    if(inplay&&!used){
     rect(xpos,ypos,100,100);
     if(price!=0){
       textSize(50);
@@ -559,18 +671,31 @@ class powerup{
       text(price,xpos,ypos+100);
       
     }
+    imageMode(CENTER);
+    if(type=="health_canister"){
+     image(health,xpos,ypos,200,200);
+    }
+      if(type=="damage"){
+        image(damage,xpos,ypos,100,100);
+      }
+      if(type=="reach"){
+        image(range,xpos,ypos,100,100);
+        
+      }
+      if(type=="movement"){
+        
+        image(movement,xpos,ypos,100,100);
+      }
     if((player1.xpos-xpos)*(player1.xpos-xpos)+(player1.ypos-ypos)*(player1.ypos-ypos)<2500&&player1.money>price){
       if(type=="health_canister"){
         player1.maxHealth+=25;
         player1.health=player1.maxHealth;
       }
-      if(type=="heal"){
-        
-        player1.health=player1.maxHealth;
-      }
+      
       if(type=="damage"){
         
         player1.damage+=20;
+        
       }
       if(type=="reach"){
         
@@ -583,7 +708,7 @@ class powerup{
       used=true;
       player1.money-=price;
     }
-    }
+    
   }
-  
+  }
 }
