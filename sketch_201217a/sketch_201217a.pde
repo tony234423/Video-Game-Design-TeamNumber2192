@@ -1,7 +1,19 @@
 player player1;
 int levelCap=5;
 obstacle obstacles[][]= new obstacle[levelCap+1][7];//the jagged arrays that can be used in java do not work here for some reason,so I have to use dummy variables
-PImage img;
+PImage img_player;
+PImage img_shortsword;
+PImage img_shortsword_rotate;
+PImage img_longsword;
+PImage img_longsword_rotate;
+PImage shortsword_back;
+PImage shortsword_left;
+PImage longsword_back;
+PImage longsword_left;
+PImage health;
+PImage damage;
+PImage range;
+PImage movement;
 button[] buttons=new button[2];
 enemy[][] enemies = new enemy[levelCap+1][4];
 powerup[][] powerups= new powerup[levelCap+1][1];
@@ -11,7 +23,20 @@ boolean won;
 int frames;
 powerup[] powerupshop= new powerup[3];
 void setup(){
-  img= loadImage("The_Knight_Idle.png");
+  
+  img_player= loadImage("The_Knight_Idle.png");
+  img_shortsword=loadImage("Layer1.png");
+  img_shortsword_rotate=loadImage("Layer1_rotate.png");
+  img_longsword=loadImage("Layer2.png");
+  img_longsword_rotate=loadImage("Layer2_rotate.png");
+  shortsword_back=loadImage("Layer1_back.png");
+  shortsword_left=loadImage("Layer1_left.png");
+  longsword_back=loadImage("Layer2_back.png");
+  longsword_left=loadImage("Layer2_left.png");
+  health=loadImage("Studio_Project.png");
+  damage= loadImage("game_skill_ui_knife_stab_damage-512.png");
+  range= loadImage("1661733-200.png");
+  movement= loadImage("Winged_Shoe-512.png");
   background(220);
   fullScreen();//(1080,1920)
   frameRate(60);
@@ -131,7 +156,7 @@ void draw(){
   }
   if(!paused&&level<=levelCap){
     frames+=1;
-  background(220);
+  background(255);
   for(int i=0;i<enemies[level].length;i++){
     enemies[level][i].update();
   }
@@ -177,7 +202,6 @@ void draw(){
     text("Enemy was here",500,1000);
     text("This is a spiked wall",1100,600);
     text("This isn't a spiked wall",1500,600);
-    text("I am not spiked",1500,800);
     text("Door will spawn here", width/2,50);
     text("Press P to pause",400,500);
     if(enemies[0][0].alive==false&& enemies[0][1].inplay==false){
@@ -230,6 +254,3 @@ void keyPressed(){
 void mousePressed(){
   player1.attack();
 }
-    
-
-  
