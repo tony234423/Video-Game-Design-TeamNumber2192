@@ -1,5 +1,7 @@
+import processing.sound.*;
 player player1;
-int levelCap=8;
+int levelCap=9;
+SoundFile fireballSound;
 obstacle obstacles[][]= new obstacle[levelCap+1][7];//the jagged arrays that can be used in java do not work here for some reason,so I have to use dummy variables
 
 PImage playerTop;
@@ -70,19 +72,30 @@ PImage golem;
 PImage golemLeft;
 PImage golemRight;
 PImage golemHurt;
+PImage riderLeft;
+PImage rider;
+PImage riderRight;
+PImage riderHurt;
+PImage dragonLeft;
+PImage dragon;
+PImage dragonRight;
+PImage dragonHurt;
+PImage bossLeft;
+PImage boss;
+PImage bossRight;
+PImage bossHurt;
+PImage fireball;
 button[] buttons=new button[2];
 enemy[][] enemies = new enemy[levelCap+1][4];
 powerup[][] powerups= new powerup[levelCap+1][1];
 boolean paused;
-int level;
+int level;//one less than the level number, since this variable starts from 0 at the first level
 boolean won;
 int frames;
 
 powerup[] powerupshop= new powerup[3];
 powerup[] powerupshop2= new powerup[3];
 void setup(){
-  
-  
   playerTop=loadImage("standing_forward_player.png");
   playerTop1=loadImage("step1_forward_player.png");
   playerTop2=loadImage("step2_forward_player.png");
@@ -148,8 +161,20 @@ void setup(){
   golemLeft=loadImage("left_foot_golem.png");
   golem=loadImage("standing_foot_golem.png");;
   golemHurt=loadImage("hurt_golem_ice.png");
-  
-  
+   riderLeft=loadImage("left_rider.png");
+   rider=loadImage("standing_rider.png");
+   riderRight=loadImage("right_rider.png");
+   riderHurt=loadImage("hurt_rider.png");
+   dragonLeft=loadImage("left_leg_dragon.png");
+   dragon=loadImage("standing_dragon.png");
+   dragonRight=loadImage("right_leg_dragon.png");
+   dragonHurt=loadImage("hurt_dragon.png");
+   bossLeft=loadImage("left_leg_dragonrider.png");
+   boss=loadImage("standing_dragonrider.png");
+   bossRight=loadImage("right_leg_dragonrider.png"); 
+   bossHurt=loadImage("hurt_dragonrider.png");
+   fireball=loadImage("fireball.png");
+  fireballSound= new SoundFile(this,"fire_noise.wav");
   background(220);
   size(1920, 1080, P2D);
   frameRate(60);
@@ -158,7 +183,7 @@ void setup(){
   imageMode(CENTER);
   noStroke();
   textAlign(CENTER);
-  player1= new player(500,250,250,5);
+  player1= new player(1000,250,250,5);
   obstacles[0][0]= new obstacle(0.,0.,200.,50.,false,true,false); // visually left top xpos ypos, right bottom xpos ypos, spike, invis,door
   obstacles[0][1]= new obstacle(1000.,500.,1200.,700.,true,false,false);
   obstacles[0][2]= new obstacle(1400.,500.,1600.,700.,false,false,false);
@@ -180,8 +205,8 @@ void setup(){
   obstacles[2][4]= new obstacle(200,400,250,850,true,false,false);
   obstacles[2][5]= new obstacle(1000,200,1700,250,true,false,false);
   obstacles[2][6]= new obstacle(1300,250,1350,800,true,false,false);
-  obstacles[3][0]= new obstacle(1400,200,1600,800,false,false,false);
-  obstacles[3][1]= new obstacle(200,200,400,800,false,false,false);
+  obstacles[3][0]= new obstacle(1500,200,1600,800,false,false,false);
+  obstacles[3][1]= new obstacle(200,200,300,800,false,false,false);
   obstacles[3][2]= new obstacle(0,0,0,0,false,true,false);
   obstacles[3][3]= new obstacle(0,0,0,0,false,true,false);
   obstacles[3][4]=new obstacle(width/2-150,0,width/2-100,100,false,false,false);
@@ -222,6 +247,13 @@ void setup(){
   obstacles[8][4]=new obstacle(width-50,0,width,height,false,false,false);
   obstacles[8][5]= new obstacle(width/2-100,0,width/2+100,100,false,true,true);
   obstacles[8][6]=new obstacle(width/2+100,0,width,100,false,false,false);
+  obstacles[9][0]= new obstacle(0,0,width/2-100,100,false,false,false);
+  obstacles[9][1]= new obstacle(width/2+100,0,width,100,false,false,false);
+  obstacles[9][2]= new obstacle(width/2+100,height-100,width,height,false,false,false);
+  obstacles[9][3]= new obstacle(0,height-100,width/2-100,height,false,false,false);
+  obstacles[9][4]=new obstacle(0,0,width/2-100,100,false,false,false);
+  obstacles[9][5]=new obstacle(width/2+100,0,width/2+150,100,false,true,false);
+  obstacles[9][6]= new obstacle(width/2-100,0,width/2+100,100,false,true,true);
   enemies[0][0]=new enemy(10,100,500,1000,5,30,"melee",true,10);//damage, health, xpos, ypos, movement, size, behavior, inplay, loot
   enemies[0][1]=new enemy(10,100,500,900,5,30,"melee",false,10);
   enemies[0][2]=new enemy(10,100,600,1000,5,30,"melee",false,10);
@@ -258,6 +290,10 @@ void setup(){
   enemies[8][1]=new enemy(10,0,width/2-100,height/2,5,30,"",false,20);
   enemies[8][2]=new enemy(10,0,width/2-100,height/2,5,30,"",false,20);
   enemies[8][3]=new enemy(10,0,width/2-100,height/2,5,30,"",false,20);
+  enemies[9][0]=new enemy(20,500,width/2,height/2,5,100,"boss3",true,20);
+  enemies[9][1]=new enemy(15,200,width/2,height/2,5,60,"rider",false,20);
+  enemies[9][2]=new enemy(15,300,width/2-100,height/2,5,100,"dragon",false,20);
+  enemies[9][3]=new enemy(10,0,width/2-100,height/2,5,30,"",false,20);
   //position,type,inplay,used
   powerups[0][0]= new powerup(0,0,"",false,true,0);//level one doesnt get a powerup
   powerups[1][0]= new powerup(width/2,height/2,"health_canister",false,false,0);
@@ -268,6 +304,7 @@ void setup(){
   powerups[6][0]= new powerup(width/2,height/2,"damage",false,false,0);
   powerups[7][0]= new powerup(0,0,"",false,true,0);
   powerups[8][0]= new powerup(0,0,"",false,true,0);
+  powerups[9][0]= new powerup(0,0,"",false,true,0);
   //level five and level 9 will be shops
   powerupshop[0]= new powerup(width/2,height/2,"health_canister",true,false,175);
   powerupshop[1]= new powerup(width/2-200,height/2,"damage",true,false,125);
@@ -377,11 +414,16 @@ void draw(){
       enemies[3][1].inplay=true;
       enemies[3][2].inplay=true;
     }
+
   }
-  
-  ///fill(0);
-  ///text("Time(s):"+frames/frameRate,width-100,height-100);
-  ///dont particularly want to include this because it's screwy and also there's too much sidetext
+  if(level==9&&!paused){
+    if(!enemies[9][0].alive&&!enemies[9][1].inplay){
+      enemies[9][2].xpos=enemies[9][0].xpos;
+      enemies[9][2].ypos=enemies[9][0].ypos;
+      enemies[9][1].inplay=true;
+      enemies[9][2].inplay=true;
+    }
+    }
   
   
   

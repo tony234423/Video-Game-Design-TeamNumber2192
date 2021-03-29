@@ -27,7 +27,7 @@ public class button {
         visib=false;
       }
       if(type=="start"){
-        level=0;
+        level=9;
         visib=false;
         paused=false;
       }
@@ -93,7 +93,7 @@ public class player extends entity{
     facingx=1;
     facingy=0;
     immunity=0;
-    invincFrames=60;
+    invincFrames=30;
     attackCooldown=0;
     attackSpeed=15;
     reach=100;
@@ -565,14 +565,13 @@ public class player extends entity{
         }
     }
     
-    strokeWeight(3);
-    fill(255,255,255,10);
     stroke(0);
-    
+    strokeWeight(3);
     rectMode(CORNERS);
+    fill(255);
     rect(0,0,200,50);
     fill(255,0,0);
-
+    
     rect(0,0,health*200/maxHealth,50);
     fill(0);
     textSize(25);
@@ -621,11 +620,7 @@ public class player extends entity{
       }
     }
     if(attackCooldown==0&&!paused){
-    ///strokeWeight(3);
-    ///stroke(255,0,0);
-    ///line(xpos+facingx*size/2,ypos+facingy*size/2,xpos+facingx*(size/2+reach),ypos+facingy*(size/2+reach));
-    ///rectMode(CORNER);
-    ///rect(xpos+facingx*size/2-5*(abs(facingx)-1),ypos+facingy*size/2-5*(abs(facingy)-1),xpos+facingx*(size/2+reach)+5*(abs(facingx)-1),ypos+facingy*(size/2+reach)+5*(abs(facingx)-1));
+   
     attackCooldown+=attackSpeed;
     noStroke();
     imageMode(CORNER);
@@ -856,8 +851,8 @@ void update(){
 public class enemy extends entity{
   String behavior, attackPattern;
   boolean alive,inplay;
-  float direction;
-  ///float direction2;
+  float direction,direction2,direction3;
+  int attackCooldown2;
   enemy(int d, int h, float xpo, float ypo, float mov, float siz, String b, boolean inpla,int m){
     damage=d;
     xmov=0;
@@ -877,21 +872,15 @@ public class enemy extends entity{
     maxHealth=h;
     money=m;
     attackCooldown=0;
+    attackCooldown2=0; //solely for the final boss
     attackPattern="";
     direction=0;//for sword enemies and boss enemies
-   /// direction2=0;//dont want this to be x and y since just direction can be used
+    direction2=0;//dont want this to be x and y since just direction can be used
+    direction3=0;
   }
   void update(){
     if(alive&&inplay){
-    strokeWeight(3);
-    fill(255,0,0,64);
-    if(immunity>0){
-      stroke(255,0,0);
-      fill(255,0,0,64);
-    }
-    rectMode(CENTER);
-    rect(xpos,ypos,size,size);
-    rectMode(CORNERS);
+   
     if(behavior=="melee"){
       imageMode(CENTER);
       
@@ -1051,7 +1040,7 @@ public class enemy extends entity{
         if(abs(xpos-player1.xpos)>abs(ypos-player1.ypos)){
           xmov= -(xpos-player1.xpos)*(abs(xpos-player1.xpos)-80)*(abs(xpos-player1.xpos)-80)/(((abs(xpos-player1.xpos)-80)*(abs(xpos-player1.xpos)-80)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs(xpos-player1.xpos));
           ymov=-(ypos-player1.ypos)*(ypos-player1.ypos)*(ypos-player1.ypos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs(ypos-player1.ypos));
-          if(abs(xpos-player1.xpos)<100&&(ypos-player1.ypos)<player1.size&&attackCooldown==0){
+          if(abs(xpos-player1.xpos)<100&&abs(ypos-player1.ypos)<player1.size&&attackCooldown==0){
             
             
             direction=(xpos-player1.xpos)/abs(xpos-player1.xpos);
@@ -1070,7 +1059,7 @@ public class enemy extends entity{
         else{
            ymov= -(ypos-player1.ypos)*(abs(ypos-player1.ypos)-80)*(abs(ypos-player1.ypos)-80)/(((abs(ypos-player1.ypos)-80)*(abs(ypos-player1.ypos)-80)+(xpos-player1.xpos)*(xpos-player1.xpos))*abs(ypos-player1.ypos));
             xmov=-(xpos-player1.xpos)*(xpos-player1.xpos)*(xpos-player1.xpos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs(xpos-player1.xpos));
-            if(abs(ypos-player1.ypos)<100&&(xpos-player1.xpos)<player1.size&&attackCooldown==0){
+            if(abs(ypos-player1.ypos)<100&&abs(xpos-player1.xpos)<player1.size&&attackCooldown==0){
               strokeWeight(5);
             
             direction=(ypos-player1.ypos)/abs(ypos-player1.ypos);
@@ -1088,7 +1077,7 @@ public class enemy extends entity{
       
       
     }
-    if(behavior=="boss2"){//second and final bossfight
+    if(behavior=="boss2"){//second bossfight
     imageMode(CENTER);
     
     if(immunity==0){
@@ -1229,6 +1218,315 @@ public class enemy extends entity{
         player1.hit(damage);
       }
       
+    }
+    if(behavior=="boss3"){
+      imageMode(CENTER);
+      if(immunity==0){
+      if(frames % 16 >=0&&frames % 16<=3){
+        image(bossLeft,xpos,ypos,size*2,size*2);
+        
+      }
+      if(frames % 16 >=4&&frames % 16<=7){
+        image(boss,xpos,ypos,size*2,size*2);
+        
+      }
+      if(frames % 16 >=8&&frames % 16<=11){
+        image(bossRight,xpos,ypos,size*2,size*2);
+        
+      }
+      if(frames % 16 >=12&&frames % 16<=15){
+        image(boss,xpos,ypos,size*2,size*2);
+       
+      }
+      
+      }
+      else{
+        image(bossHurt,xpos,ypos,size*2,size*2);
+      }
+      if(attackCooldown==0){
+        
+        float r= random(0,2);
+        if(1>=r){
+          attackCooldown+=360;
+        }
+        else{
+          attackCooldown-=300;
+        }
+      }
+      else if(attackCooldown>0){
+        attackCooldown-=1;
+      }
+      else if(attackCooldown<0){
+        attackCooldown+=1;
+      }
+      if(attackCooldown<=360&&attackCooldown>0&&attackCooldown%120==0){
+        fireballSound.play();
+        direction=-(xpos-player1.xpos)*(xpos-player1.xpos)*(xpos-player1.xpos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs((xpos-player1.xpos)));
+        direction2=-(ypos-player1.ypos)*(ypos-player1.ypos)*(ypos-player1.ypos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs((ypos-player1.ypos)));
+      }
+      if(attackCooldown<=360&&attackCooldown>0){
+        xmov=0.2*(xpos-player1.xpos)*(xpos-player1.xpos)*(xpos-player1.xpos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs((xpos-player1.xpos)));
+        ymov=0.2*(ypos-player1.ypos)*(ypos-player1.ypos)*(ypos-player1.ypos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs((ypos-player1.ypos)));
+      }
+      if(attackCooldown<=360&&attackCooldown>240){
+        imageMode(CENTER);
+        
+        image(fireball,xpos+direction*2*movs*(360-attackCooldown),ypos+direction2*2*movs*(360-attackCooldown),100,100);
+        
+        if((xpos+direction*2*movs*(360-attackCooldown)-player1.xpos)*(xpos+direction*2*movs*(360-attackCooldown)-player1.xpos)+(ypos+direction2*movs*2*(360-attackCooldown)-player1.ypos)*(ypos+direction2*movs*2*(360-attackCooldown)-player1.ypos)<100*100){
+          player1.hit(damage);
+        }
+      }
+      if(attackCooldown<=240&&attackCooldown>120){
+        imageMode(CENTER);
+        image(fireball,xpos+direction*2*movs*(240-attackCooldown),ypos+direction2*2*movs*(240-attackCooldown),100,100);
+       
+        if((xpos+direction*2*movs*(240-attackCooldown)-player1.xpos)*(xpos+direction*2*movs*(240-attackCooldown)-player1.xpos)+(ypos+direction2*movs*2*(240-attackCooldown)-player1.ypos)*(ypos+direction2*movs*2*(240-attackCooldown)-player1.ypos)<100*100){
+          player1.hit(damage);
+        }
+      }
+      if(attackCooldown<=120&&attackCooldown>0){
+        imageMode(CENTER);
+        image(fireball,xpos+direction*2*movs*(120-attackCooldown),ypos+direction2*2*movs*(120-attackCooldown),100,100);
+        
+        if((xpos+direction*2*movs*(120-attackCooldown)-player1.xpos)*(xpos+direction*2*movs*(120-attackCooldown)-player1.xpos)+(ypos+direction2*2*movs*(120-attackCooldown)-player1.ypos)*(ypos+direction2*2*movs*(120-attackCooldown)-player1.ypos)<100*100){
+          player1.hit(damage);
+        }
+      }
+      if(attackCooldown<0&&attackCooldown>=-300){
+        xmov=1.4*-(xpos-player1.xpos)*(xpos-player1.xpos)*(xpos-player1.xpos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs((xpos-player1.xpos)));
+        ymov=1.4*-(ypos-player1.ypos)*(ypos-player1.ypos)*(ypos-player1.ypos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs((ypos-player1.ypos)));
+      }
+      if(attackCooldown2==0){
+        imageMode(CORNER);
+        if(abs(xpos-player1.xpos)<150&&abs(ypos-player1.ypos)<player1.size){
+            direction3=(xpos-player1.xpos)/abs(xpos-player1.xpos);
+            
+            if(direction3>0){
+            image(longsword_left,xpos,ypos,-150,-20);
+            
+            }
+            else{
+              image(img_longsword_rotate,xpos,ypos,150,-20);
+            }
+            player1.hit(damage);
+            attackCooldown2-=60;
+          }
+          imageMode(CORNER);
+          if(abs(ypos-player1.ypos)<150&&abs(xpos-player1.xpos)<player1.size&&attackCooldown==0){
+              strokeWeight(5);
+            
+            direction3=(ypos-player1.ypos)/abs(ypos-player1.ypos);
+            if(direction3<0){
+            image(longsword_back,xpos,ypos,-20,150);
+            
+            }
+            else{
+              image(img_longsword,xpos,ypos,-20,-150);
+            }
+            player1.hit(damage);
+            attackCooldown2+=60;
+          }
+      }
+      else if(attackCooldown2>0){
+        imageMode(CORNER);
+        attackCooldown2-=1;
+        if(direction3<0){
+            image(longsword_back,xpos,ypos,-20,150);
+            
+            }
+            else{
+              image(img_longsword,xpos,ypos,-20,-150);
+            }
+        
+      }
+      else if(attackCooldown2<0){
+        imageMode(CORNER);
+        attackCooldown2+=1;
+        if(direction3>0){
+            image(longsword_left,xpos,ypos,-150,-20);
+            
+            }
+            else{
+              image(img_longsword_rotate,xpos,ypos,150,-20);
+            }
+      }
+      if(collision(player1)){
+        player1.hit(damage/2);
+      }
+    }
+    if(behavior=="rider"){
+      imageMode(CENTER);
+      
+      ////image(sword_enemy,xpos,ypos,size,size);
+      
+       if(immunity==0){
+      if(frames % 16 >=0&&frames % 16<=3){
+        image(riderLeft,xpos,ypos,size*2,size*2);
+        
+      }
+      if(frames % 16 >=4&&frames % 16<=7){
+        image(rider,xpos,ypos,size*2,size*2);
+        
+      }
+      if(frames % 16 >=8&&frames % 16<=11){
+        image(riderRight,xpos,ypos,size*2,size*2);
+        
+      }
+      if(frames % 16 >=12&&frames % 16<=15){
+        image(rider,xpos,ypos,size*2,size*2);
+       
+      }
+      
+      }
+      else{
+        image(riderHurt,xpos,ypos,size*2,size*2);
+      }
+      imageMode(CORNER);
+      if(attackCooldown>0){
+        attackCooldown-=1;
+        
+            if(direction>0){
+            image(longsword_left,xpos,ypos,-150,20);
+            
+            }
+            else{
+              image(img_longsword_rotate,xpos,ypos,100,20);
+            }
+      }
+      else if(attackCooldown<0){
+        attackCooldown+=1;
+       
+        if(direction<0){
+            image(longsword_back,xpos,ypos,20,100);
+            
+            }
+            else{
+              image(img_longsword,xpos,ypos,20,-100);
+            }
+      }
+      imageMode(CORNER);
+        if(abs(xpos-player1.xpos)>abs(ypos-player1.ypos)){
+          xmov= -(xpos-player1.xpos)*(abs(xpos-player1.xpos)-120)*(abs(xpos-player1.xpos)-120)/(((abs(xpos-player1.xpos)-120)*(abs(xpos-player1.xpos)-120)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs(xpos-player1.xpos));
+          ymov=-(ypos-player1.ypos)*(ypos-player1.ypos)*(ypos-player1.ypos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs(ypos-player1.ypos));
+          if(abs(xpos-player1.xpos)<100&&abs(ypos-player1.ypos)<player1.size&&attackCooldown==0){
+            
+            
+            direction=(xpos-player1.xpos)/abs(xpos-player1.xpos);
+            
+            if(direction>0){
+            image(longsword_left,xpos,ypos,-150,-20);
+            
+            }
+            else{
+              image(img_longsword_rotate,xpos,ypos,150,-20);
+            }
+            player1.hit(damage);
+            attackCooldown+=frameRate;
+          }
+        }
+        else{
+           ymov= -(ypos-player1.ypos)*(abs(ypos-player1.ypos)-120)*(abs(ypos-player1.ypos)-120)/(((abs(ypos-player1.ypos)-120)*(abs(ypos-player1.ypos)-120)+(xpos-player1.xpos)*(xpos-player1.xpos))*abs(ypos-player1.ypos));
+            xmov=-(xpos-player1.xpos)*(xpos-player1.xpos)*(xpos-player1.xpos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs(xpos-player1.xpos));
+            if(abs(ypos-player1.ypos)<150&&abs(xpos-player1.xpos)<player1.size&&attackCooldown==0){
+              strokeWeight(5);
+            
+            direction=(ypos-player1.ypos)/abs(ypos-player1.ypos);
+            if(direction<0){
+            image(longsword_back,xpos,ypos,-20,150);
+            
+            }
+            else{
+              image(img_longsword,xpos,ypos,-20,-150);
+            }
+            player1.hit(damage);
+            attackCooldown-=frameRate;
+          }
+        }
+      
+     
+    }
+    if(behavior=="dragon"){
+      imageMode(CENTER);
+      if(immunity==0){
+      if(frames % 16 >=0&&frames % 16<=3){
+        image(dragonLeft,xpos,ypos,size*2,size*2);
+        
+      }
+      if(frames % 16 >=4&&frames % 16<=7){
+        image(dragon,xpos,ypos,size*2,size*2);
+        
+      }
+      if(frames % 16 >=8&&frames % 16<=11){
+        image(dragonRight,xpos,ypos,size*2,size*2);
+        
+      }
+      if(frames % 16 >=12&&frames % 16<=15){
+        image(dragon,xpos,ypos,size*2,size*2);
+       
+      }
+      
+      }
+      else{
+        image(dragonHurt,xpos,ypos,size*2,size*2);
+      }
+      if(attackCooldown==0){
+        
+        float r= random(0,2);
+        if(1>=r){
+          attackCooldown+=360;
+        }
+        else{
+          attackCooldown-=300;
+        }
+      }
+      else if(attackCooldown>0){
+        attackCooldown-=1;
+      }
+      else if(attackCooldown<0){
+        attackCooldown+=1;
+      }
+      if(attackCooldown<=360&&attackCooldown>0&&attackCooldown%120==0){
+        fireballSound.play();
+        direction=-(xpos-player1.xpos)*(xpos-player1.xpos)*(xpos-player1.xpos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs((xpos-player1.xpos)));
+        direction2=-(ypos-player1.ypos)*(ypos-player1.ypos)*(ypos-player1.ypos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs((ypos-player1.ypos)));
+      }
+      if(attackCooldown<=360&&attackCooldown>0){
+        xmov=0.2*(xpos-player1.xpos)*(xpos-player1.xpos)*(xpos-player1.xpos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs((xpos-player1.xpos)));
+        ymov=0.2*(ypos-player1.ypos)*(ypos-player1.ypos)*(ypos-player1.ypos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs((ypos-player1.ypos)));
+      }
+      if(attackCooldown<=360&&attackCooldown>240){
+        imageMode(CENTER);
+        
+        image(fireball,xpos+direction*2*movs*(360-attackCooldown),ypos+direction2*2*movs*(360-attackCooldown),100,100);
+        
+        if((xpos+direction*2*movs*(360-attackCooldown)-player1.xpos)*(xpos+direction*2*movs*(360-attackCooldown)-player1.xpos)+(ypos+direction2*movs*2*(360-attackCooldown)-player1.ypos)*(ypos+direction2*movs*2*(360-attackCooldown)-player1.ypos)<100*100){
+          player1.hit(damage);
+        }
+      }
+      if(attackCooldown<=240&&attackCooldown>120){
+        imageMode(CENTER);
+        image(fireball,xpos+direction*2*movs*(240-attackCooldown),ypos+direction2*2*movs*(240-attackCooldown),100,100);
+        
+        if((xpos+direction*2*movs*(240-attackCooldown)-player1.xpos)*(xpos+direction*2*movs*(240-attackCooldown)-player1.xpos)+(ypos+direction2*movs*2*(240-attackCooldown)-player1.ypos)*(ypos+direction2*movs*2*(240-attackCooldown)-player1.ypos)<100*100){
+          player1.hit(damage);
+        }
+      }
+      if(attackCooldown<=120&&attackCooldown>0){
+        imageMode(CENTER);
+        image(fireball,xpos+direction*2*movs*(120-attackCooldown),ypos+direction2*2*movs*(120-attackCooldown),100,100);
+        
+        if((xpos+direction*2*movs*(120-attackCooldown)-player1.xpos)*(xpos+direction*2*movs*(120-attackCooldown)-player1.xpos)+(ypos+direction2*2*movs*(120-attackCooldown)-player1.ypos)*(ypos+direction2*2*movs*(120-attackCooldown)-player1.ypos)<100*100){
+          player1.hit(damage);
+        }
+      }
+      if(attackCooldown<0&&attackCooldown>=-300){
+        xmov=1.4*-(xpos-player1.xpos)*(xpos-player1.xpos)*(xpos-player1.xpos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs((xpos-player1.xpos)));
+        ymov=1.4*-(ypos-player1.ypos)*(ypos-player1.ypos)*(ypos-player1.ypos)/(((xpos-player1.xpos)*(xpos-player1.xpos)+(ypos-player1.ypos)*(ypos-player1.ypos))*abs((ypos-player1.ypos)));
+      }
+      if(collision(player1)){
+        player1.hit(damage);
+      }
     }
     for(int i=0;i<enemies[level].length;i++){
       if(inplay&&alive&&enemies[level][i].alive&&enemies[level][i].inplay){
