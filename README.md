@@ -3,3 +3,5 @@
 Video Game Design Project for Video game Design TSA Competition
 
 To play, download the application.windows64 folder in the folder Main, and run the executable contained
+
+Uses Processing as well as the Processing Library Sound
